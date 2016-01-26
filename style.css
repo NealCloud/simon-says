@@ -1,0 +1,41 @@
+body{
+
+}
+
+.simon{
+    box-sizing: border-box;
+    position: relative;
+    height: 200px;
+    width: 200px;
+    border: 1px solid black;
+    display:flex;
+    flex-wrap: wrap;
+    background-color: black;
+}
+
+.hitbox{
+    height: 49%;
+    width: 48%;
+    background: color:white;
+    border: 1px solid black;
+}
+.yellow{
+    background-color: yellow;
+    border-bottom-right-radius: 100%;
+}
+.blue{
+    background-color: blue;
+    border-bottom-left-radius: 100%;
+}
+.green{
+    background-color: green;
+    border-top-right-radius: 100%;
+}
+.red{
+    border-top-left-radius: 100%;
+    background-color: red;
+}
+
+.gold{
+    background-color: white;
+}
