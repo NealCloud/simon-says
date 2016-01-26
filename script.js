@@ -10,43 +10,35 @@ data = {
         green: 0,
         yellow: 0,
         red: 0,
-        startInt: 0,
+        //start pattern number
+        startInt: 2,
+        //computer moves array
+        cpuArray: [],
+        //player moves array
         playerColorArray: [],
+        //simon color values
         colorArray: ["red","blue","green","yellow"],
+        //jquery simon button array
         btnArray: []
 }
 
 model = {
-    getcolor: function(color){
-        return data.color;
+    getColor: function(color){
+        return data[color];
     },
     setColor: function(color){
-        return data.color;
+        return data[color];
     },
     getbtnArray: function(){return data.btnArray;},
     getplayerColorArray: function() {return data.playerColorArray;},
+    getcpuArray: function() {return data.cpuArray;},
     getcolorArray: function() {return data.colorArray;},
     getstartInt: function() {return data.startInt;}
 }
 
 
 view = {
-
-    simonBtn: function(color){
-        var btn = $("<div>").addClass("hitbox " + color);
-        $('.simon').append(btn);
-        model.getbtnArray().push($(this));
-        $(btn).click(function(){
-            console.log(color + " clicked");
-            console.log(window[color]);
-            model.getplayerColorArray().push(color);
-            $(this).addClass("gold").delay(300).queue(function(next){
-                $(this).removeClass("gold");
-                next();
-            })
-         });
-    },
-
+    //initialize board
     init: function(){
         //create simon main div
         var simon = $("<div>").addClass("simon");
@@ -68,25 +60,51 @@ view = {
             view.pattern(6);
         });
     },
+    // create buttons
+    simonBtn: function(color){
+        var btn = $("<div>").addClass("hitbox " + color);
+        $('.simon').append(btn);
+        //push buttons into array for later use;
+        model.getbtnArray().push($(this));
+        $(btn).click(function(){
+            console.log(color + " clicked");
+            console.log(model.getColor(color));
+            model.getplayerColorArray().push(color);
+            $(this).addClass("gold").delay(300).queue(function(next){
+                $(this).removeClass("gold");
+                next();
+            })
+        });
+    },
 
-    pattern: function(startInt){
-        var cpuArray = [];
+    pattern: function(num){
+        var cpu = model.getcpuArray();
         var rando, lightup;
         var lighting = true;
-        for(var i = 0; i < startInt; i++) {
-            rando = Math.floor(Math.random() * 3) + 1;
-            lightup = cpuArray[rando];
-            cpuArray.push(rando);
+        for(var i = 0; i < num; i++) {
+            rando = Math.floor(Math.random() * 4) + 1;
+            lightup = cpu[rando];
+            cpu.push(rando);
         }
 
-        $(cpuArray[rando]).addClass("gold").delay(300).queue(function(next){
-            $(cpuArray[rando]).removeClass("gold");
-            console.log(next);
-            next();
-        });
+        console.log(cpu);
+        console.log(model.getplayerColorArray());
 
-        console.log(cpuArray);
+        view.flash(model.getbtnArray()[1]);
+    },
+
+    flash: function(color) {
+
+        console.log(color);
+
+        $(this).addClass("gold").delay(300).queue(function(next){
+            $(this).removeClass("gold");
+            next();
+        })
+
+
     }
+
 }
 
 
