@@ -14,7 +14,7 @@ data = {
         humanTurn: false,
         //start pattern number
         startInt: 2,
-        countInt: 2,
+        countInt: 0,
         flashInt: null,
         //computer moves array
         cpuArray: [],
@@ -29,7 +29,6 @@ data = {
 controller = {
     getColor: function(color){return data[color];  },
     setColor: function(color){ return data[color]; },
-
     getbtnArray: function(){return data.btnArray;},
     getplayerColorArray: function() {return data.playerColorArray;},
     getcpuArray: function() {return data.cpuArray;},
@@ -45,7 +44,6 @@ controller = {
     getFlashInt: function(){return data.flashInt},
     setFlashInt: function(){data.flashInt = setTimeout(view.flashColor(), 2000)},
     clearFlashInt: function(){clearTimeout(data.flashInt);},
-
     getHumanTurn: function(){return data.humanTurn},
     setHumanTurn: function(val){data.humanTurn = val}
 }
@@ -61,10 +59,9 @@ view = {
             type: "button",
             text: "start"
         }).addClass("start");
-        var text = $("<input>",{
-            type: "text",
-            text: "start"
-        }).addClass("start");
+        var text = $("<div>",{
+            text: controller.getlives()
+        }).addClass("info");
         //create simon color divs
         view.simonBtn("red");
         view.simonBtn("green");
@@ -76,6 +73,7 @@ view = {
         //create start button link
         $(".start").click(function(){
             view.pattern(controller.getstartInt());
+            $(this).hide();
         });
     },
     // create color buttons
@@ -87,54 +85,57 @@ view = {
         btnArr.push($(this));
         //add button;
         $(btn).click(function(){
-            console.log(color + " clicked");
-            console.log(controller.getColor(color));
+
+            //console.log(color + " clicked");
+            //console.log(controller.getColor(color));
             controller.getplayerColorArray().push(color);
 
             if(controller.getHumanTurn()){
-
-                $(this).addClass("gold").delay(200).queue(function(next){
-                    $(this).removeClass("gold");
-                    next();
-                });
+                view.addClassTemp(this, "gold", 200);
 
                 var newp = controller.shiftcputArray();
                 var count = controller.getcpuArray().length;
 
+                // finish sequence correctly
                 if(newp == color && count == 0){
-                    console.log("you win");
+                    view.addClassTemp(".info", "correct", 300);
+                    view.textDisplay(".info", "nice one lives: " + controller.getlives());
+
                     controller.setHumanTurn(false);
                     controller.setstartInt(controller.getstartInt() + 1);
-                    controller.setCountInt(controller.getstartInt());
-                    view.pattern(controller.getstartInt());
+                    controller.setCountInt(0);
+                    setTimeout(view.pattern, 2000);
                 }
-
+                // continue sequence
                 else if(newp == color) {
-                    console.log("you got it!");
+                    view.addClassTemp(".info", "correct", 300);
+                    view.textDisplay(".info", "lives: " + controller.getlives());
                 }
-
+                // failed sequence
                 else{
-                    console.log("FAIL");
+                    view.addClassTemp(".info", "error", 300);
                     controller.setlives(controller.getlives() - 1);
+                    view.textDisplay(".info", "Sorry lives: " + controller.getlives());
+
                     controller.setHumanTurn(false);
                     controller.setstartInt(controller.getstartInt() - 1);
-                    controller.setCountInt(controller.getstartInt());
-                    view.pattern(controller.getstartInt());
+                    controller.setCountInt(0);
+                    setTimeout(view.pattern, 2000);
                 }
             }
         });
     },
 
-    pattern: function(num){
-
+    pattern: function(){
+        var start = controller.getstartInt();
         if(controller.getlives()== 0) return console.log('out of lives');
 
         console.log("this is player arr: ", controller.getplayerColorArray());
         controller.clearMoveArrays();
         var cpu = controller.getcpuArray();
         var rando;
-        var lighting = num;
-        for(var i = 0; i < num; i++) {
+
+        for(var i = 0; i < start; i++) {
             rando = Math.floor(Math.random() * 3);
             //console.log(controller.getcolorArray()[rando]);
             cpu.push(controller.getcolorArray()[rando]);
@@ -147,29 +148,32 @@ view = {
         view.flashColor();
     },
 
-    endFlashColor: function() {
-        console.log("color flash ended");
-        controller.clearFlashInt();
+    addClassTemp: function(targ, val, duration) {
+        $(targ).addClass(val).delay(duration).queue(function(next){
+            $(this).removeClass(val);
+            next();
+        });
+    },
+    textDisplay: function(targ, text){
+        $(targ).text(text);
     },
 
     flashColor: function() {
+        var highest = controller.getcpuArray().length;
         var num = controller.getCountInt();
-        --num;
-
+        num++;
         controller.setCountInt(num);
+
         var cpu = controller.getcpuArray();
 
         console.log("countdown num: " + num);
         console.log("This is the color: " , cpu[num - 1]);
 
-        var flash = $("." + cpu[num]);
+        var flash = $("." + cpu[num - 1]);
 
-        $(flash).addClass("gold").delay(300).queue(function(next){
-            $(flash).removeClass("gold");
-            next();
-        })
+        view.addClassTemp(flash, "gold", 300);
 
-        if(num >= 0){
+        if(num <= highest){
             setTimeout(view.flashColor, 1000);
         }
         else{

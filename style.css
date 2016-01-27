@@ -12,7 +12,17 @@ body{
     flex-wrap: wrap;
     background-color: black;
 }
-
+.info{
+    border: 1px solid #341a80;
+    width: 200px;
+    height: 100px;
+}
+.correct{
+    background-color: #26c316;
+}
+.error{
+    background-color: red;
+}
 .hitbox{
     height: 49%;
     width: 48%;
